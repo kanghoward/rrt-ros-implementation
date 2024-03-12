@@ -1,4 +1,5 @@
 #### FINISHED:
+create github repo
 graph data struct
 rrt helper functions
 implement vanilla rrt algo
