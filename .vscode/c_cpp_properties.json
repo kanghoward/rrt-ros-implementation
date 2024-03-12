@@ -1,0 +1,38 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/kanghoweee/catkin_ws/install_isolated/include/**",
+        "/home/kanghoweee/dynamixel_ws/devel/include/**",
+        "/opt/ros/noetic/include/**",
+        "/home/kanghoweee/dynamixel_ws/src/aruco_ros/aruco/include/**",
+        "/home/kanghoweee/dynamixel_ws/src/aruco_ros/aruco_ros/include/**",
+        "/home/kanghoweee/dynamixel_ws/src/aruco_track/include/**",
+        "/home/kanghoweee/dynamixel_ws/src/ddynamic_reconfigure/include/**",
+        "/home/kanghoweee/dynamixel_ws/src/dynamixel-workbench/dynamixel_workbench_controllers/include/**",
+        "/home/kanghoweee/dynamixel_ws/src/dynamixel-workbench/dynamixel_workbench_operators/include/**",
+        "/home/kanghoweee/dynamixel_ws/src/dynamixel-workbench/dynamixel_workbench_single_manager/include/**",
+        "/home/kanghoweee/dynamixel_ws/src/dynamixel-workbench/dynamixel_workbench_single_manager_gui/include/**",
+        "/home/kanghoweee/dynamixel_ws/src/dynamixel-workbench/dynamixel_workbench_toolbox/include/**",
+        "/home/kanghoweee/dynamixel_ws/src/feetech_controls/include/**",
+        "/home/kanghoweee/dynamixel_ws/src/feetech/feetechlib/include/**",
+        "/home/kanghoweee/dynamixel_ws/src/laser_filters-noetic-devel/include/**",
+        "/home/kanghoweee/dynamixel_ws/src/odom/include/**",
+        "/home/kanghoweee/dynamixel_ws/src/pointcloud_to_laserscan-lunar-devel/include/**",
+        "/home/kanghoweee/dynamixel_ws/src/realsense-ros/realsense2_camera/include/**",
+        "/home/kanghoweee/Desktop/RRT-ASSIGNMENT/src/rrt_planner_ros/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}

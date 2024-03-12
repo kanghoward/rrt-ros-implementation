@@ -1,0 +1,8 @@
+map_topic: '/map'
+path_topic: '/path'
+
+# Add more parameters here to make the RRT algorithm tunable
+
+iterations: 10000
+step_size: 20
+goal_radius: 10    # tweak this to set the end-search condition
