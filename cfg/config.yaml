@@ -3,6 +3,10 @@ path_topic: '/path'
 
 # Add more parameters here to make the RRT algorithm tunable
 
-iterations: 10000
+iterations: 5000
 step_size: 20
 goal_radius: 10    # tweak this to set the end-search condition
+
+# for RRT*
+rrt_star: true     # toggle to enable RRT*, else it is vanilla RRT
+neighbourhood_radius: 30    # tweak this to set the RRT* radius

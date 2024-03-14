@@ -6,7 +6,8 @@ int main(int argv, char ** argc)
   ros::NodeHandle node;
 
   double resolution, occupied_thresh, free_thresh;
-  int iterations, step_size, goal_radius;
+  int iterations, neighbourhood_radius, step_size, goal_radius;
+  bool rrt_star;
   std::vector<double> origin;
   // Get parameters from the parameter server
   // node.getParam("/occupied_thresh", occupied_thresh);
@@ -16,6 +17,8 @@ int main(int argv, char ** argc)
   node.getParam("/step_size", step_size);
   node.getParam("/goal_radius", goal_radius);
   node.getParam("/resolution", resolution);
+  node.getParam("/neighbourhood_radius", neighbourhood_radius);
+  node.getParam("/rrt_star", rrt_star);
 
 
   // // Print the retrieved parameters
@@ -26,11 +29,11 @@ int main(int argv, char ** argc)
   // // Print the origin vector
   // ROS_INFO("Origin: [%f, %f, %f]", origin[0], origin[1], origin[2]);
 
-  ROS_INFO("Iterations: %d", iterations);
-  ROS_INFO("Step Size: %d", step_size);
-  ROS_INFO("Goal Radius: %d", goal_radius);
-  ROS_INFO("Resolution: %f", resolution);
+  
+  
 
 
-  new rrt_planner::RRTPlanner(&node, iterations, step_size, goal_radius, resolution);
+
+
+  new rrt_planner::RRTPlanner(&node, iterations, step_size, goal_radius, resolution, neighbourhood_radius, rrt_star);
 }

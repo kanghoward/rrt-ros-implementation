@@ -23,6 +23,7 @@ class Point2D
 public:
   Point2D(): x_(0), y_(0) , parent_index(-1), dist(0) {}
   Point2D(int x, int y): x_(x), y_(y), parent_index(-1), dist(0) {}
+  Point2D(int x, int y, int index, double distance): x_(x), y_(y), parent_index(index), dist(distance) {}
 
   int x() const
   {
@@ -119,6 +120,8 @@ public:
         return std::sqrt(std::pow(point1.x() - point2.x(), 2) + std::pow(point1.y() - point2.y(), 2));
     }
 
+    // void updateDistances(double dl)
+
 
     // Public method to display information about the graph
     void displayGraphInfo() const {
@@ -170,6 +173,20 @@ public:
         return path;
     }
 
+
+  std::vector<int> getNeighbours(const Point2D& newNode, int neighbourhoodRadius) {
+    std::vector<int> neighboursIndex;
+    for (size_t i = 0; i < vertices.size(); ++i) {
+      double distance = calculateDistance(newNode, vertices[i]);
+
+      if (distance < neighbourhoodRadius) {
+          neighboursIndex.push_back(static_cast<int>(i));
+      }
+    }
+      return neighboursIndex;
+  }
+
+
     // Public method to reset the graph
     void reset() {
         vertices.clear();
@@ -183,7 +200,7 @@ public:
 class RRTPlanner
 {
 public:
-  explicit RRTPlanner(ros::NodeHandle *, int iterations, int step_size, int goal_radius, double resolution);
+  explicit RRTPlanner(ros::NodeHandle *, int iterations, int step_size, int goal_radius, double resolution, int neighbourhood_radius, bool rrt_star);
 
   ~RRTPlanner() = default;
 
@@ -299,7 +316,7 @@ private:
     /**
    * Utility function to rewire nodes in the surrounding radius (used in RRT*)
    */
-  void rewire(const Point2D& newNode, int neighbourhoodRadius);
+  void RRT_STAR(Graph& graph, Point2D& newNode, int neighbourhoodRadius);
 
 
   /**
@@ -339,6 +356,8 @@ private:
   int step_size_;
   int goal_radius_;
   double resolution_;
+  int neighbourhood_radius_;
+  bool rrt_star_;
 };
 
 }
