@@ -21,8 +21,8 @@ namespace rrt_planner
 class Point2D
 {
 public:
-  Point2D(): x_(0), y_(0) , parent_index(-1) {}
-  Point2D(int x, int y): x_(x), y_(y), parent_index(-1) {}
+  Point2D(): x_(0), y_(0) , parent_index(-1), dist(0) {}
+  Point2D(int x, int y): x_(x), y_(y), parent_index(-1), dist(0) {}
 
   int x() const
   {
@@ -37,6 +37,11 @@ public:
   int getParent() const
   {
     return parent_index;
+  }
+
+  double getDistance() const
+  {
+    return dist;
   }
 
   void x(int x)
@@ -55,11 +60,19 @@ public:
     parent_index = index;
   }
 
+  // set optional distance index
+  void setDistance(double distance = 0)
+  {
+    dist = distance;
+  }
+
+
 
 private:
   int x_;
   int y_;
   int parent_index;
+  double dist;
 };
 
 
@@ -71,9 +84,7 @@ private:
     std::vector<Point2D> vertices;
     std::vector<std::pair<int, int>> edges;
 
-    double calculateDistance(const Point2D& point1, const Point2D& point2) const {
-        return std::sqrt(std::pow(point1.x() - point2.x(), 2) + std::pow(point1.y() - point2.y(), 2));
-    }
+    
 
 public:
     // Public constructor
@@ -103,6 +114,11 @@ public:
     size_t getEdgeCount() const {
         return edges.size();
     }
+
+    double calculateDistance(const Point2D& point1, const Point2D& point2) const {
+        return std::sqrt(std::pow(point1.x() - point2.x(), 2) + std::pow(point1.y() - point2.y(), 2));
+    }
+
 
     // Public method to display information about the graph
     void displayGraphInfo() const {
@@ -278,6 +294,12 @@ private:
    * Utility function to link a new node to the existing RRT Tree
    */
   void Chain(Graph& graph, const Point2D& newX, int nearestIndex);
+
+
+    /**
+   * Utility function to rewire nodes in the surrounding radius (used in RRT*)
+   */
+  void rewire(const Point2D& newNode, int neighbourhoodRadius);
 
 
   /**

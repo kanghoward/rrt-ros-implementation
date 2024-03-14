@@ -156,7 +156,7 @@ void RRTPlanner::plan()
   //         Return G
   // Return G
 
-  // max iteration limit (defined above as a C++ macro constant) & iteration counter
+  // max iteration limit & iteration counter
   int counter = 0;
 
   ROS_INFO_STREAM(iterations_);
@@ -186,6 +186,7 @@ void RRTPlanner::plan()
 
     //if all tests pass, create new edge and add to RRT graph
     xNew.setParent(xNearestIndex);
+    xNew.setDistance(xNearest.getDistance() + rrt_graph.calculateDistance(xNew, xNearest));
     Chain(rrt_graph, xNew, xNearestIndex);
     drawCircle(xNew, 2, cv::Scalar(0, 0, 255));
     drawLine(xNew, xNearest, cv::Scalar (0, 0, 255), 1);
@@ -241,10 +242,12 @@ void RRTPlanner::publishPath()
     pose.header.stamp = ros::Time::now();  // Timestamp each pose
 
     path.poses.push_back(pose);
+
+    ROS_INFO_STREAM("Distance is : " << point.getDistance());
   }
   // Publish the calculated path
 
-  // ROS_INFO_STREAM("Path is : " << path);
+  
   path_pub_.publish(path);
 
   displayMapImage();
@@ -341,8 +344,15 @@ Point2D RRTPlanner::rescalePoint(const Point2D& curr, const Point2D& randPoint, 
 
 void RRTPlanner::Chain(Graph& graph, const Point2D& newX, int nearestIndex) {
   graph.addVertex(newX);
+
   int newIndex = static_cast<int>(graph.getVertexCount()) - 1;
   graph.addEdge(nearestIndex, newIndex);
+}
+
+
+
+void RRTPlanner::rewire(const Point2D& newNode, int neighbourhoodRadius)  {
+  return;
 }
 
 
