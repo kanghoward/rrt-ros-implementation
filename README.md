@@ -43,41 +43,56 @@ When a map has been loaded successfully it should be visible in RViz. The user c
 Press the `2D Pose Estimate` button in RViz to set the initial pose. Press the `2D Nav Goal` button in RViz to set the goal pose.
 Or you can provide the same through the topics `/initialpose` and `/move_base_simple/goal` respectively.
 
-## Tuning
-Parameters can be provided to the RRT Planner node using the [cfg/config.yaml](cfg/config.yaml) file.
-Certain RRT parameters can be made configurable by adding them to this file.
+
 
 
 ## Additional stuff (Part of Assignment)
 
+## Tuning
+Parameters can be provided to the RRT Planner node using the [cfg/config.yaml](cfg/config.yaml) file.
+Certain RRT parameters can be made configurable by adding them to this file.
+
 ## RRT Algorithm Configuration
 
-This repository contains a configuration file (`config.yaml`) to tune the Rapidly-exploring Random Tree (RRT) algorithm. This file allows you to customize various parameters to tailor the behavior of the RRT algorithm according to your specific needs. The map configuration file (`config.yaml`) is used to specify the resolution and the map-image used for the RRT algorithm. 
+This repository contains a configuration file (`config.yaml`) to tune the Rapidly-exploring Random Tree (RRT) algorithm. This file allows you to customize various parameters to tailor the behavior of the RRT algorithm according to your specific needs. The map configuration file (`config.yaml`) is used to specify the resolution and the map image used for the RRT algorithm. 
 
 #### config.yaml
 
-```yaml
 
+- `iterations: 5000`
+    -> Sets the maximum number of iterations for the RRT algorithm.
 
-iterations: 5000
-step_size: 20
-goal_radius: 10     tweak this to set the end-search condition
+- `step_size: 20`
+    -> Specifies the distance the algorithm will attempt to extend the tree in each iteration.
 
-# for RRT*
-rrt_star: true     # toggle to enable RRT*, else it is vanilla RRT
-neighbourhood_radius: 30    # tweak this to set the RRT* radius
-```
+- `goal_radius: 10`
+    -> Tweak this parameter to set the end-search condition.
 
+- `rrt_star: true`
+    -> Toggle to enable RRT* algorithm. If disabled, the algorithm operates as vanilla RRT.
+
+- `neighbourhood_radius: 30`
+    -> Tweak this parameter to set the radius for RRT* algorithm.
 
 #### map.yaml
-```yaml
-image: ../resources/extra4.png
-resolution: 0.1
-origin: [0.0, 0.0, 0.0]
-occupied_thresh: 0.65
-free_thresh: 0.196
-negate: 1    # set negate to zero if black walls on white BG, set to one if white walls on black BG
-```
+- `image: ../resources/extra4.png`
+    -> Specifies the image file path for the map.
+
+- `resolution: 0.1`
+    -> Sets the resolution of the map.
+
+- `origin: [0.0, 0.0, 0.0]`
+    -> Sets the origin of the map.
+
+- `occupied_thresh: 0.65`
+    -> Specifies the threshold value for considering a cell occupied.
+
+- `free_thresh: 0.196`
+    -> Specifies the threshold value for considering a cell free.
+
+- `negate: 1`
+    -> Set negate to zero if black walls on white background, set to one if white walls on black background.
+
 
 
 
@@ -89,14 +104,30 @@ This section introduces the Graph and Point2D utility classes, which are essenti
 
 The Point2D class represents a two-dimensional point with optional parent index and distance to parent attributes. It offers the following methods:
 
-    Point2D(): Default constructor.
-    Point2D(int x, int y): Constructor with coordinates.
-    Point2D(int x, int y, int index, double relativeDistance): Constructor with coordinates, parent index, and distance to parent.
-    x(), y(): Accessor methods for coordinates.
-    getParent(): Accessor method for the parent index.
-    getDistanceToParent(): Accessor method for the distance to the parent.
-    setParent(int index = -1): Setter method for the parent index.
-    setDistanceToParent(double distance = 0): Setter method for the distance to the parent.
+- `Point2D()`: 
+    -> Default constructor.
+
+- `Point2D(int x, int y)`: 
+    -> Constructor with coordinates.
+
+- `Point2D(int x, int y, int index, double relativeDistance)`: 
+    -> Constructor with coordinates, parent index, and distance to parent.
+
+- `x()`, `y()`: 
+    -> Accessor methods for coordinates.
+
+- `getParent()`: 
+    -> Accessor method for the parent index.
+
+- `getDistanceToParent()`: 
+    -> Accessor method for the distance to the parent.
+
+- `setParent(int index = -1)`: 
+    -> Setter method for the parent index.
+
+- `setDistanceToParent(double distance = 0)`: 
+    -> Setter method for the distance to the parent.
+
 
 #### Graph Class
 
