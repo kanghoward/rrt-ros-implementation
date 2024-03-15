@@ -273,10 +273,6 @@ private:
    */
   void buildMapImage();
 
-  /**
-   * Utility function to check if a point is within the goal region
-   */
-  void attachGoal(const int index);
 
   /**
    * Utility function to display the CV::Mat map image
@@ -351,6 +347,12 @@ private:
    * Utility function to rescale a point to a step distance
    */
   Point2D rescalePoint(const Point2D& curr, const Point2D& randPoint, int distance);
+
+
+  /**
+   * Utility function to check if a point is within the goal region
+   */
+  void attachGoal(const int index);
 
 // ADDITIONAL UTLITY FUNCTIONS (END SECTION)
 
