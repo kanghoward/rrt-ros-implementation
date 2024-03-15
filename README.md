@@ -163,6 +163,19 @@ The Graph class represents a graph structure composed of vertices and edges. It 
 - `getNeighbours(const Point2D& newNode, int neighbourhoodRadius)`: 
     -> Retrieves the indices of neighbors within a given radius.
 
+## Main Functions (Assignment Requirements)
+
+- `void publishPath()`: 
+    -> Publishes the path calculated by RRT as a nav_msgs::Path message. The candidate is required to implement the logic in this function.
+
+- `bool isPointUnoccupied(const Point2D & p)`: 
+    -> Utility function to check if a given point is free or occupied in the map. 
+    - `p`: Point in the map.
+    - Returns a boolean value indicating true if the point is unoccupied and false if occupied. The candidate is required to implement the logic in this function.
+
+- `void plan()`: 
+    -> Given a map, the initial pose, and the goal, this function will plan a collision-free path through the map from the initial pose to the goal using the RRT or RRT* algorithm
+
 
 
 ## Additional Utility Functions
