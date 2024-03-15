@@ -8,5 +8,5 @@ step_size: 20
 goal_radius: 10    # tweak this to set the end-search condition
 
 # for RRT*
-rrt_star: true     # toggle to enable RRT*, else it is vanilla RRT
+rrt_star: false     # toggle to enable RRT*, else it is vanilla RRT
 neighbourhood_radius: 30    # tweak this to set the RRT* radius

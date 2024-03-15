@@ -52,7 +52,7 @@ Or you can provide the same through the topics `/initialpose` and `/move_base_si
 
 ### Images
 
-![Vanilla RRT](visualizations/rrt.jpg) ![RRT*](visualizations/rrtstar.jpg)
+![Vanilla RRT](visualizations/rrt.png) ![RRT*](visualizations/rrtstar.png)
 
 ### Videos
 
