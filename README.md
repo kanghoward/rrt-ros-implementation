@@ -198,11 +198,13 @@ This section provides an overview of the utility functions included in this repo
     -> Utility function to check if a point is within the goal region.
 
 
+## RRT & RRT* Theory
 
-## RRT Pseudocode
+#### RRT Pseudocode
+
+This section presents the pseudocode for the RRT (Rapidly-Exploring Random Tree) algorithm, outlining the steps to plan a collision-free path through the map from the initial pose to the goal pose. 
 
 ```cpp
-
 Main RRT (Rapidly-Exploring Random Tree) algorithm
 RRT Pseudocode
 Qgoal //region that identifies success
@@ -220,7 +222,9 @@ While counter < lim:
         Return G
 ```
 
-## RRT* Pseudocode
+#### RRT* Pseudocode
+
+This pseudocode outlines the steps for implementing the RRT* (Rapidly-Exploring Random Tree Star) algorithm, which is an enhanced version of RRT that optimizes the tree structure to produce more efficient paths.
 
 ```cpp
 Main RRT* (Rapidly-Exploring Random Tree Star) algorithm
