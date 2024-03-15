@@ -169,34 +169,20 @@ The Graph class represents a graph structure composed of vertices and edges. It 
 
 This section provides an overview of the utility functions included in this repository. These functions can be used to enhance the functionality of your RRT algorithm implementation.
 
-```cpp
-/**
- * Utility function to generate a random point within the map
- */
-Point2D RandomPosition();
+- `Point2D RandomPosition()`: 
+    -> Utility function to generate a random point within the map.
 
-/**
- * Utility function to rewire nodes in the surrounding radius (used in RRT*)
- */
-int RRT_STAR(Graph& graph, Point2D& newNode, int neighbourhoodRadius);
+- `int RRT_STAR(Graph& graph, Point2D& newNode, int neighbourhoodRadius)`: 
+    -> Utility function to rewire nodes in the surrounding radius (used in RRT*).
 
-/**
- * Utility function to check if an edge intersects any obstacles
- */
-bool isEdgeIntersectingObstacle(const Point2D & p1, const Point2D & p2);
+- `bool isEdgeIntersectingObstacle(const Point2D & p1, const Point2D & p2)`: 
+    -> Utility function to check if an edge intersects any obstacles.
 
-/**
- * Utility function to rescale a point to a step distance
- */
-Point2D rescalePoint(const Point2D& curr, const Point2D& randPoint, int distance);
+- `Point2D rescalePoint(const Point2D& curr, const Point2D& randPoint, int distance)`: 
+    -> Utility function to rescale a point to a step distance.
 
-/**
- * Utility function to check if a point is within the goal region
- */
-void attachGoal(const int index);
-
-```
-
+- `void attachGoal(const int index)`: 
+    -> Utility function to check if a point is within the goal region.
 
 
 
