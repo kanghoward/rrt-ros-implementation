@@ -4,4 +4,4 @@ origin: [0.0, 0.0, 0.0]
 occupied_thresh: 0.65
 free_thresh: 0.196
 negate: 1    
-# set negate to zero if black walls on white BG, set to one if white wals on black BG
+# set negate to zero if black walls on white BG, set to one if white walls on black BG
