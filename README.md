@@ -174,7 +174,7 @@ The Graph class represents a graph structure composed of vertices and edges. It 
     - Returns a boolean value indicating true if the point is unoccupied and false if occupied. The candidate is required to implement the logic in this function.
 
 - `void plan()`: 
-    -> Given a map, the initial pose, and the goal, this function will plan a collision-free path through the map from the initial pose to the goal using the RRT or RRT* algorithm
+    -> Given a map, the initial pose, and the goal, this function will plan a collision-free path through the map from the initial pose to the goal using the RRT or RRT* algorithm based on configuration in [cfg/config.yaml]
 
 
 
@@ -196,6 +196,55 @@ This section provides an overview of the utility functions included in this repo
 
 - `void attachGoal(const int index)`: 
     -> Utility function to check if a point is within the goal region.
+
+
+
+## RRT Pseudocode
+
+```cpp
+
+Main RRT (Rapidly-Exploring Random Tree) algorithm
+RRT Pseudocode
+Qgoal //region that identifies success
+Counter = 0 //keeps track of iterations
+lim = n //number of iterations algorithm should run for
+G(V,E) //Graph containing edges and vertices, initialized as empty
+While counter < lim:
+    Xnew  = RandomPosition()
+    if IsInObstacle(Xnew) == True:
+        continue
+    Xnearest = Nearest(G(V,E),Xnew) //find nearest vertex
+    Link = Chain(Xnew,Xnearest)
+    G.append(Link)
+    if Xnew in Qgoal:
+        Return G
+```
+
+## RRT* Pseudocode
+
+```cpp
+Main RRT* (Rapidly-Exploring Random Tree Star) algorithm
+RRT* Pseudocode
+Qgoal //region that identifies success
+Counter = 0 //keeps track of iterations
+lim = n //number of iterations algorithm should run for
+G(V,E) //Graph containing edges and vertices, initialized as empty
+While counter < lim:
+    Xnew  = RandomPosition()
+    if IsInObstacle(Xnew) == True:
+        continue
+    Xnearest = Nearest(G(V,E),Xnew) //find nearest vertex
+    Xnew = Steer(Xnearest, Xnew) // steer towards Xnew within a certain radius
+    if IsInObstacle(Xnew) == True:
+        continue
+    Xnearests = Near(G(V,E),Xnew, neighbourhood_radius) // find nearby vertices within a radius
+    Xnearest = ChooseParent(G(V,E), Xnew, Xnearests) // choose the best parent among the nearby vertices
+    Link = Chain(Xnew,Xnearest)
+    G.append(Link)
+    Rewire(G(V,E), Xnew, Xnearests) // rewire the tree considering new node Xnew
+    if Xnew in Qgoal:
+        Return G
+```
 
 
 

@@ -412,12 +412,9 @@ int RRTPlanner::RRT_STAR(Graph& graph, Point2D& newNode, int neighbourhoodRadius
 
   ROS_INFO_STREAM("Minindex: " << minIndex);
 
-
-
   // rrt* needs distances to continuously update lol
   // SAVE DISTANCES AS DELTAS, MORE EFFICIENT TO UPDATE
   // RETRIEVAL CAN BE DONE BY BACKTRACKING
-
 
   if (minIndex == -1) {
     return -1; // stops if no possible node to connect to
