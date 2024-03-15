@@ -46,7 +46,19 @@ Or you can provide the same through the topics `/initialpose` and `/move_base_si
 
 
 
-## Additional stuff (Part of Assignment)
+# Assignment Deliverables
+
+## Visualization
+
+### Images
+
+![Vanilla RRT](visualizations/rrt.jpg) ![RRT*](visualizations/rrtstar.jpg)
+
+### Videos
+
+[![Vanilla RRT](visualizations/rrt.jpg)](visualizations/rrt.mp4) [![RRT*](visualizations/rrtstar.jpg)](visualizations/rrtstar.mp4)
+
+
 
 ## Tuning
 Parameters can be provided to the RRT Planner node using the [cfg/config.yaml](cfg/config.yaml) file.
