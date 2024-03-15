@@ -67,7 +67,7 @@ Vanilla RRT Video Demonstration
 
 ### RRT\* Implementation
 
-![RRT* OpenCV](visualizations/rrtvanilla_opencv.png) ![RRT* RViz](visualizations/rrtvanilla_rviz.png)
+![RRT* OpenCV](visualizations/rrtstar_opencv.png) ![RRT* RViz](visualizations/rrtstar_rviz.png)
 
 RRT\* Images (OpenCV visualization and corresponding RViz path displayed)
 
