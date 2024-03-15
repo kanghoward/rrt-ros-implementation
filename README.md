@@ -102,16 +102,36 @@ The Point2D class represents a two-dimensional point with optional parent index 
 
 The Graph class represents a graph structure composed of vertices and edges. It provides methods for managing vertices, edges, calculating distances, and finding nearest vertices. The key methods include:
 
-    addVertex(const Point2D& vertex): Adds a vertex to the graph.
-    getVertex(int index): Retrieves a vertex from the graph.
-    setVertexParent(int curr_index, int parent_index): Sets the parent index for a vertex.
-    addEdge(int vertex1, int vertex2): Adds an edge between two vertices.
-    getVertexCount(), getEdgeCount(): Returns the number of vertices and edges.
-    calculateEuclideanDistance(const Point2D& point1, const Point2D& point2): Calculates the Euclidean distance between two points.
-    findNearestVertex(const Point2D& target): Finds the index of the nearest vertex to a given point.
-    backtrackPath(int goalIndex): Backtracks the path from a goal vertex to the start.
-    getTotalPathDistance(const Point2D& point): Calculates the total path distance from a given point to the start.
-    getNeighbours(const Point2D& newNode, int neighbourhoodRadius): Retrieves the indices of neighbors within a given radius.
+- `addVertex(const Point2D& vertex)`: 
+-> Adds a vertex to the graph.
+    
+- `getVertex(int index)`: 
+    -> Retrieves a vertex from the graph.
+    
+- `setVertexParent(int curr_index, int parent_index)`: 
+    -> Sets the parent index for a vertex.
+    
+- `addEdge(int vertex1, int vertex2)`: 
+    -> Adds an edge between two vertices.
+    
+- `getVertexCount()`, `getEdgeCount()`: 
+    -> Returns the number of vertices and edges.
+    
+- `calculateEuclideanDistance(const Point2D& point1, const Point2D& point2)`: 
+    -> Calculates the Euclidean distance between two points.
+    
+- `findNearestVertex(const Point2D& target)`: 
+    -> Finds the index of the nearest vertex to a given point.
+    
+- `backtrackPath(int goalIndex)`: 
+    -> Backtracks the path from a goal vertex to the start.
+    
+- `getTotalPathDistance(const Point2D& point)`: 
+    -> Calculates the total path distance from a given point to the start.
+    
+- `getNeighbours(const Point2D& newNode, int neighbourhoodRadius)`: 
+    -> Retrieves the indices of neighbors within a given radius.
+
 
 
 ## Additional Utility Functions
