@@ -267,7 +267,7 @@ While counter < lim:
 In the context of the RRT* algorithm, optimization strategies are crucial for enhancing efficiency and performance. Here's how various optimization techniques benefit the algorithm:
 
 - **Continuous Distance Updates**:
-  - Saving distances as deltas allows for efficient updates in the RRT* algorithm. By storing incremental changes in distances, the algorithm can swiftly adjust and optimize paths without the need to recalculate distances from scratch.
+  - Saving distances as relative distances to the immediate parent node allows for efficient updates in the RRT* algorithm with asymptotic Olog(n) time complexity. By storing incremental changes in distances, the algorithm can swiftly adjust and optimize paths without the need to recalculate distances from scratch.
 
 - **Redrawing Efficiency**:
   - Redrawing the entire map for each new node addition may initially seem inefficient. However, this approach offers optimization benefits in terms of map rendering. By redrawing only the necessary elements, such as newly added nodes and edges, the algorithm minimizes computational overhead while maintaining an updated and visually informative map representation.
