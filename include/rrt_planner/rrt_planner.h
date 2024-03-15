@@ -21,9 +21,9 @@ namespace rrt_planner
 class Point2D
 {
 public:
-  Point2D(): x_(0), y_(0) , parent_index(-1), dist(0) {}
-  Point2D(int x, int y): x_(x), y_(y), parent_index(-1), dist(0) {}
-  Point2D(int x, int y, int index, double distance): x_(x), y_(y), parent_index(index), dist(distance) {}
+  Point2D(): x_(0), y_(0) , parent_index(-1), distToParent(0) {}
+  Point2D(int x, int y): x_(x), y_(y), parent_index(-1), distToParent(0) {}
+  Point2D(int x, int y, int index, double relativeDistance): x_(x), y_(y), parent_index(index), distToParent(relativeDistance) {}
 
   int x() const
   {
@@ -40,9 +40,9 @@ public:
     return parent_index;
   }
 
-  double getDistance() const
+  double getDistanceToParent() const
   {
-    return dist;
+    return distToParent;
   }
 
   void x(int x)
@@ -62,9 +62,9 @@ public:
   }
 
   // set optional distance index
-  void setDistance(double distance = 0)
+  void setDistanceToParent(double distance = 0)
   {
-    dist = distance;
+    distToParent = distance;
   }
 
 
@@ -73,7 +73,7 @@ private:
   int x_;
   int y_;
   int parent_index;
-  double dist;
+  double distToParent;
 };
 
 
@@ -101,6 +101,10 @@ public:
         return vertices[index];
     }
 
+    void setVertexParent(int curr_index, int parent_index) {
+      vertices[curr_index].setParent(parent_index);
+    }
+
     // Public method to add an edge to the graph
     void addEdge(int vertex1, int vertex2) {
         edges.emplace_back(vertex1, vertex2);
@@ -116,9 +120,11 @@ public:
         return edges.size();
     }
 
-    double calculateDistance(const Point2D& point1, const Point2D& point2) const {
+    double calculateEuclideanDistance(const Point2D& point1, const Point2D& point2) const {
         return std::sqrt(std::pow(point1.x() - point2.x(), 2) + std::pow(point1.y() - point2.y(), 2));
     }
+
+    
 
     // void updateDistances(double dl)
 
@@ -146,7 +152,7 @@ public:
         double minDistance = std::numeric_limits<double>::max();
 
         for (size_t i = 0; i < vertices.size(); ++i) {
-            double distance = calculateDistance(target, vertices[i]);
+            double distance = calculateEuclideanDistance(target, vertices[i]);
 
             if (distance < minDistance) {
                 minDistance = distance;
@@ -173,18 +179,29 @@ public:
         return path;
     }
 
-
-  std::vector<int> getNeighbours(const Point2D& newNode, int neighbourhoodRadius) {
-    std::vector<int> neighboursIndex;
-    for (size_t i = 0; i < vertices.size(); ++i) {
-      double distance = calculateDistance(newNode, vertices[i]);
-
-      if (distance < neighbourhoodRadius) {
-          neighboursIndex.push_back(static_cast<int>(i));
+    double getTotalPathDistance(const Point2D& point) {
+      double cumulativeDist = point.getDistanceToParent();
+      int currentIndex = point.getParent();
+      while (currentIndex != -1) {
+            cumulativeDist = cumulativeDist + vertices[currentIndex].getDistanceToParent();
+            currentIndex = vertices[currentIndex].getParent();
       }
+      // ROS_INFO_STREAM(cumulativeDist);
+      return cumulativeDist;
     }
-      return neighboursIndex;
-  }
+
+
+    std::vector<int> getNeighbours(const Point2D& newNode, int neighbourhoodRadius) {
+      std::vector<int> neighboursIndex;
+      for (size_t i = 0; i < vertices.size(); ++i) {
+        double distance = calculateEuclideanDistance(newNode, vertices[i]);
+
+        if (distance < neighbourhoodRadius) {
+            neighboursIndex.push_back(static_cast<int>(i));
+        }
+      }
+        return neighboursIndex;
+    }
 
 
     // Public method to reset the graph
@@ -257,6 +274,11 @@ private:
   void buildMapImage();
 
   /**
+   * Utility function to check if a point is within the goal region
+   */
+  void attachGoal(const int index);
+
+  /**
    * Utility function to display the CV::Mat map image
    * @param delay
    */
@@ -273,7 +295,7 @@ private:
    * @param radius: radius of the circle
    * @param color: color of the circle
    */
-  void drawCircle(Point2D & p, int radius, const cv::Scalar & color);
+  void drawCircle(const Point2D & p, int radius, const cv::Scalar & color);
 
   /**
    * Utility function to draw a line on the map
@@ -282,7 +304,7 @@ private:
    * @param color: color of the line
    * @param thickness: thickness of the line
    */
-  void drawLine(Point2D & p1, Point2D & p2, const cv::Scalar & color, int thickness = 1);
+  void drawLine(const Point2D & p1, const Point2D & p2, const cv::Scalar & color, int thickness = 1);
 
   /**
    * Utility function to convert a Point2D object to a geometry_msgs::PoseStamped object
@@ -307,16 +329,16 @@ private:
    */
   Point2D RandomPosition();
 
-  /**
-   * Utility function to link a new node to the existing RRT Tree
-   */
-  void Chain(Graph& graph, const Point2D& newX, int nearestIndex);
+  // /**
+  //  * Utility function to link a new node to the existing RRT Tree
+  //  */
+  // void Chain(Graph& graph, const Point2D& newX, int nearestIndex);
 
 
     /**
    * Utility function to rewire nodes in the surrounding radius (used in RRT*)
    */
-  void RRT_STAR(Graph& graph, Point2D& newNode, int neighbourhoodRadius);
+  int RRT_STAR(Graph& graph, Point2D& newNode, int neighbourhoodRadius);
 
 
   /**

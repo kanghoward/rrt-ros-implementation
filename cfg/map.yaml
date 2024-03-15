@@ -1,4 +1,4 @@
-image: ../resources/extra3.pgm
+image: ../resources/extra4.png
 resolution: 0.1
 origin: [0.0, 0.0, 0.0]
 occupied_thresh: 0.65

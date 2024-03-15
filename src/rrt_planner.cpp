@@ -2,9 +2,6 @@
 #include <cmath>
 #include <stdexcept>
 #include <float.h>
-// #define RRT_STAR 1
-// #define NEIGHBOURHOOD_RADIUS 30
-
 namespace rrt_planner
 {
 
@@ -27,16 +24,17 @@ RRTPlanner::RRTPlanner(ros::NodeHandle * node, int iterations, int step_size, in
   private_nh_.param<std::string>("path_topic", path_topic, "/path");
 
   // CHECK IF PARAMS ARE RECEIVED PROPERLY
-  ROS_INFO("Iterations: %d", iterations);
-  ROS_INFO("Step Size: %d", step_size);
-  ROS_INFO("Goal Radius: %d", goal_radius);
-  ROS_INFO("Resolution: %f", resolution);
+  ROS_INFO_STREAM("Iterations: " << iterations);
+  ROS_INFO_STREAM("Step Size: " << step_size);
+  ROS_INFO_STREAM("Goal Radius: " << goal_radius);
+  ROS_INFO_STREAM("Resolution: " << resolution);
+  ROS_INFO_STREAM("DBL_MAX: " << DBL_MAX);
 
   if (rrt_star) {
-    ROS_INFO("RRT* enabled");
-    ROS_INFO("neighbourhood_radius: %d", neighbourhood_radius);
+    ROS_INFO_STREAM("RRT* enabled");
+    ROS_INFO_STREAM("neighbourhood_radius: " << neighbourhood_radius);
   } else {
-    ROS_INFO("Normal RRT enabled");
+    ROS_INFO_STREAM("Normal RRT enabled");
   }
 
 
@@ -185,6 +183,8 @@ void RRTPlanner::plan()
   ROS_INFO("Init RRT Graph.");
   rrt_graph.addVertex(init_pose_);
 
+  ROS_INFO_STREAM(init_pose_.getDistanceToParent());
+
   // core RRT logic loop
   while (counter < iterations_) {
     ROS_INFO_STREAM("Point Number: " << counter);
@@ -203,35 +203,32 @@ void RRTPlanner::plan()
     // drawCircle(xNew, 2, cv::Scalar(0, 255, 0));
     if (rrt_star_) {
       // the edge intersecting obstacle needs to be done for every point in the neighbourhood
-      RRT_STAR(rrt_graph, xNew, neighbourhood_radius_);
+      int goalParentIndex = RRT_STAR(rrt_graph, xNew, neighbourhood_radius_);
+      if (goalParentIndex >= 0) {
+        attachGoal(goalParentIndex);
+        ROS_INFO("A path has been found.");
+        publishPath();
+        return;
+      }
     } else {
       // the edge intersecting obstacle needs to be done only for the nearest point
       if (isEdgeIntersectingObstacle(xNearest,xNew)) {continue;}
       // if all tests pass, create new edge and add to RRT graph
       xNew.setParent(xNearestIndex);
-      xNew.setDistance(xNearest.getDistance() + rrt_graph.calculateDistance(xNew, xNearest));
-      Chain(rrt_graph, xNew, xNearestIndex);
+      xNew.setDistanceToParent(rrt_graph.calculateEuclideanDistance(xNew, xNearest));
+      rrt_graph.addVertex(xNew);
       drawCircle(xNew, 2, cv::Scalar(0, 0, 255));
       drawLine(xNew, xNearest, cv::Scalar (0, 0, 255), 1);
       // ROS_INFO_STREAM("New X: " << xNew.x());
+      if (rrt_graph.calculateEuclideanDistance(goal_, xNew) < goal_radius_) {
+        attachGoal(rrt_graph.getVertexCount() - 1);
+        ROS_INFO("A path has been found.");
+        publishPath();
+        return;
+      } 
     }
     
     displayMapImage();
-
-    // Check if xNew is in the Qgoal region + end iteration if found
-    if (fabs(xNew.x() - goal_.x()) < goal_radius_ && fabs(xNew.y() - goal_.y()) < goal_radius_) {
-      // add one final edge to the goal node
-      int xNew_index = static_cast<int>(rrt_graph.getVertexCount()) - 1;
-      goal_.setParent(xNew_index);
-      Chain(rrt_graph, goal_, xNew_index);
-      drawCircle(xNew, 2, cv::Scalar(0, 0, 255));
-      drawLine(goal_, xNew, cv::Scalar (0, 0, 255), 1);
-      displayMapImage();
-      ROS_INFO("A path has been found.");
-
-      publishPath();
-      return;
-    } 
     counter++;
   }
   //failed to find a path within iteration limit
@@ -252,6 +249,7 @@ void RRTPlanner::publishPath()
   std::vector<Point2D> backtracked_path = rrt_graph.backtrackPath(goal_.getParent());
   // double scale_factor = 0.1; //same value as resolution in map.yaml file
   // convert point to pose
+  int count = 0;
   for (const auto& point : backtracked_path) {
     geometry_msgs::PoseStamped pose;
     // SWAP X Y DUE TO OPENCV'S IN-BUILT COORDINATE FLIP
@@ -268,7 +266,13 @@ void RRTPlanner::publishPath()
 
     path.poses.push_back(pose);
 
-    ROS_INFO_STREAM("Distance is : " << point.getDistance());
+    ROS_INFO_STREAM("Total Distance is : " << rrt_graph.getTotalPathDistance(point));
+    ROS_INFO_STREAM("Rel Distance to Parent is : " << point.getDistanceToParent());
+    ROS_INFO_STREAM("Parent Node is : " << point.getParent());
+    ROS_INFO_STREAM("index from goal is : " << count);
+    ROS_INFO_STREAM("-------------------------------------------");
+    drawCircle(point, 2, cv::Scalar(255, 0, 0));
+    count++;
   }
   // Publish the calculated path
 
@@ -311,7 +315,7 @@ void RRTPlanner::displayMapImage(int delay)
   cv::waitKey(delay);
 }
 
-void RRTPlanner::drawCircle(Point2D & p, int radius, const cv::Scalar & color)
+void RRTPlanner::drawCircle(const Point2D & p, int radius, const cv::Scalar & color)
 {
   cv::circle(
     *map_,
@@ -321,7 +325,7 @@ void RRTPlanner::drawCircle(Point2D & p, int radius, const cv::Scalar & color)
     -1);
 }
 
-void RRTPlanner::drawLine(Point2D & p1, Point2D & p2, const cv::Scalar & color, int thickness)
+void RRTPlanner::drawLine(const Point2D & p1, const Point2D & p2, const cv::Scalar & color, int thickness)
 {
   cv::line(
     *map_,
@@ -367,34 +371,38 @@ Point2D RRTPlanner::rescalePoint(const Point2D& curr, const Point2D& randPoint, 
         return {newX, newY};
     }
 
-void RRTPlanner::Chain(Graph& graph, const Point2D& newX, int nearestIndex) {
-  graph.addVertex(newX);
-  int newIndex = static_cast<int>(graph.getVertexCount()) - 1;
-  graph.addEdge(nearestIndex, newIndex);
+void RRTPlanner::attachGoal(const int index) {
+  // add one final edge to the goal node
+    Point2D xNew = rrt_graph.getVertex(index);
+    goal_.setParent(index);
+    rrt_graph.addVertex(xNew);
+    drawCircle(xNew, 2, cv::Scalar(0, 0, 255));
+    drawLine(goal_, xNew, cv::Scalar (0, 0, 255), 1);
 }
+  
 
 
 
-void RRTPlanner::RRT_STAR(Graph& graph, Point2D& newNode, int neighbourhoodRadius)  {
+int RRTPlanner::RRT_STAR(Graph& graph, Point2D& newNode, int neighbourhoodRadius)  {
   std::vector<int> neighboursIndex = graph.getNeighbours(newNode, neighbourhoodRadius);
-  std::vector<double> distanceToNodeFromNeighbours;
+  std::vector<double> totalDistances;
   std::vector<double> relativeDistances; // implicitly stores intersecting edges with distance=-1
   // ROS_INFO_STREAM("neighbours index: " << std::to_string(neighboursIndex));
 
   // ADDING VERTEX TO MIN PATH LENGTH, NOT NEAREST NODE
   int minIndex = -1;
-  double minDistance = DBL_MAX;
+  double minTotalDistanceToNodeFromNeighbour = DBL_MAX;
   for (size_t i = 0; i < neighboursIndex.size(); ++i) {
     Point2D neighbour = graph.getVertex(neighboursIndex[i]);
 
     if (!isEdgeIntersectingObstacle(newNode, neighbour)) {
-      double relativeDistance = graph.calculateDistance(newNode, neighbour);
+      double relativeDistance = graph.calculateEuclideanDistance(newNode, neighbour);
       relativeDistances.push_back(relativeDistance);
-      double distanceToNodeFromNeighbour = neighbour.getDistance() + relativeDistance;
-      ROS_INFO_STREAM("current neighbour: " << neighboursIndex[i]);
-      ROS_INFO_STREAM("distanceToNodeFromNeighbour: " << distanceToNodeFromNeighbour);
-      if (distanceToNodeFromNeighbour < minDistance) {
-          minDistance = distanceToNodeFromNeighbour;
+      double totalDistanceToNodeFromNeighbour = graph.getTotalPathDistance(neighbour) + relativeDistance;
+      // ROS_INFO_STREAM("current neighbour: " << neighboursIndex[i]);
+      // ROS_INFO_STREAM("distanceToNodeFromNeighbour: " << distanceToNodeFromNeighbour);
+      if (totalDistanceToNodeFromNeighbour < minTotalDistanceToNodeFromNeighbour) {
+          minTotalDistanceToNodeFromNeighbour = totalDistanceToNodeFromNeighbour;
           minIndex = neighboursIndex[i];
       }
     } else {
@@ -404,35 +412,61 @@ void RRTPlanner::RRT_STAR(Graph& graph, Point2D& newNode, int neighbourhoodRadiu
 
   ROS_INFO_STREAM("Minindex: " << minIndex);
 
-  if (minIndex == -1) {
-    return;
-  }
 
-  ROS_INFO_STREAM("Mindistance: " << minDistance);
+
+  // rrt* needs distances to continuously update lol
+  // SAVE DISTANCES AS DELTAS, MORE EFFICIENT TO UPDATE
+  // RETRIEVAL CAN BE DONE BY BACKTRACKING
+
+
+  if (minIndex == -1) {
+    return -1; // stops if no possible node to connect to
+  }  
+  
   Point2D shortestNode = graph.getVertex(minIndex);
   newNode.setParent(minIndex);
-  newNode.setDistance(minDistance);
-  Chain(rrt_graph, newNode, minIndex);
+  newNode.setDistanceToParent(graph.calculateEuclideanDistance(newNode, shortestNode));
+  graph.addVertex(newNode);
   drawCircle(newNode, 2, cv::Scalar(0, 0, 255));
   drawLine(newNode, shortestNode, cv::Scalar (0, 0, 255), 1);
+  ROS_INFO_STREAM("last vertex: " << graph.getVertexCount());
+  
+  if (graph.calculateEuclideanDistance(goal_, newNode) < goal_radius_) {
+    return graph.getVertexCount() - 1; // stops if the new node is already inside the goal radius
+  }
 
-  // REWIRE SURROUNDING VERTICES
+
+  for (size_t i = 0; i < relativeDistances.size(); ++i) {
+    ROS_INFO_STREAM("relativeDistance: " << relativeDistances[i]);
+  }
+
+
+double distanceToNewNode = graph.getTotalPathDistance(newNode);
+
+  // REWIRE SURROUNDING VERTICES only if new point added
   for (size_t i = 0; i < neighboursIndex.size(); ++i) { 
     // run only for non-intersecting potential edges
     if (relativeDistances[i] > 0) {
       Point2D neighbour = graph.getVertex(neighboursIndex[i]);
-      double distanceToNeighbourFromNode = newNode.getDistance() + relativeDistances[i];
+      double totalDistanceToNeighbourFromNode = distanceToNewNode + relativeDistances[i];
       // ROS_INFO_STREAM("current neighbour: " << neighboursIndex[i]);
       // ROS_INFO_STREAM("distanceToNodeFromNeighbour: " << distanceToNodeFromNeighbour);
-      double dl = distanceToNeighbourFromNode - neighbour.getDistance();
-      if (dl < 0) {
-          neighbour.setDistance(distanceToNeighbourFromNode); 
+
+      if ( totalDistanceToNeighbourFromNode < graph.getTotalPathDistance(neighbour)) {
+
+          ROS_INFO_STREAM("-----------------------------------------");
+          ROS_INFO_STREAM("old parent: " << graph.getVertex(neighboursIndex[i]).getParent());
+          ROS_INFO_STREAM("old total distance: " << graph.getTotalPathDistance(neighbour));
+          ROS_INFO_STREAM("dl: " << totalDistanceToNeighbourFromNode - graph.getTotalPathDistance(neighbour));
+
+
+          graph.getVertex(neighboursIndex[i]).setDistanceToParent(relativeDistances[i]); 
           // update all distances of downstream nodes by dl (TO BE IMPLEMENTED IF TIME PERMITS)
           // graph.updateDistances(dl);
-
+          
           // update opencv map styling 
           // (delete old line connection)
-          Point2D neighbourOldParent = graph.getVertex(neighbour.getParent());
+          // Point2D neighbourOldParent = graph.getVertex(neighbour.getParent());
 
           // impractical to "delete" old edges (repaint old edges white), hence might need to redraw entire map every time a new node is added. It's doable, but it is a matter of styling
           // drawLine(neighbourOldParent, neighbour, cv::Scalar (255, 255, 255), 2);
@@ -442,15 +476,18 @@ void RRTPlanner::RRT_STAR(Graph& graph, Point2D& newNode, int neighbourhoodRadiu
 
           // draw new line connection (green is used to highlight the differences btw old lines and new lines)
           drawLine(newNode, neighbour, cv::Scalar (0, 255, 0), 1);
-
-          // update parent (last node added is the newNode)
-          neighbour.setParent(graph.getVertexCount() - 1); 
-
           
-          
+          // update parent (last node added is the newNode) # NEED TO UPDATE IN GRAPH DATA STRUCTURE
+          graph.setVertexParent(neighboursIndex[i], graph.getVertexCount() - 1);
+          // neighbour.setParent(graph.getVertexCount() - 1); 
+          ROS_INFO_STREAM("new parent: " << graph.getVertex(neighboursIndex[i]).getParent());          
+          ROS_INFO_STREAM("new total distance: " << graph.getTotalPathDistance(neighbour));
+          ROS_INFO_STREAM("new dist to parent: " << graph.getVertex(neighboursIndex[i]).getDistanceToParent());          
       }
     } 
   }
+
+  return -1;
 }
 
 
