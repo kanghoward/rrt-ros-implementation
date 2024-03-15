@@ -412,7 +412,7 @@ int RRTPlanner::RRT_STAR(Graph& graph, Point2D& newNode, int neighbourhoodRadius
 
   ROS_INFO_STREAM("Minindex: " << minIndex);
 
-  // rrt* needs distances to continuously update lol
+  // rrt* needs distances to continuously update
   // SAVE DISTANCES AS DELTAS, MORE EFFICIENT TO UPDATE
   // RETRIEVAL CAN BE DONE BY BACKTRACKING
 
@@ -457,15 +457,14 @@ double distanceToNewNode = graph.getTotalPathDistance(newNode);
           ROS_INFO_STREAM("dl: " << totalDistanceToNeighbourFromNode - graph.getTotalPathDistance(neighbour));
 
 
+          // update all distances of downstream nodes by dl 
           graph.getVertex(neighboursIndex[i]).setDistanceToParent(relativeDistances[i]); 
-          // update all distances of downstream nodes by dl (TO BE IMPLEMENTED IF TIME PERMITS)
-          // graph.updateDistances(dl);
           
           // update opencv map styling 
           // (delete old line connection)
           // Point2D neighbourOldParent = graph.getVertex(neighbour.getParent());
 
-          // impractical to "delete" old edges (repaint old edges white), hence might need to redraw entire map every time a new node is added. It's doable, but it is a matter of styling
+          // impractical to "delete" old edges (repaint old edges white), hence might need to redraw entire map every time a new node is added. It's doable, but it's inefficient
           // drawLine(neighbourOldParent, neighbour, cv::Scalar (255, 255, 255), 2);
 
           // delete existing edge in graph (TO BE IMPLEMENTED IF TIME PERMITS)

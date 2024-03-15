@@ -250,5 +250,46 @@ While counter < lim:
         Return G
 ```
 
+## RRT* Algorithm Optimization
+
+In the context of the RRT* algorithm, optimization strategies are crucial for enhancing efficiency and performance. Here's how various optimization techniques benefit the algorithm:
+
+- **Continuous Distance Updates**:
+  - Saving distances as deltas allows for efficient updates in the RRT* algorithm. By storing incremental changes in distances, the algorithm can swiftly adjust and optimize paths without the need to recalculate distances from scratch.
+
+- **Redrawing Efficiency**:
+  - Redrawing the entire map for each new node addition may initially seem inefficient. However, this approach offers optimization benefits in terms of map rendering. By redrawing only the necessary elements, such as newly added nodes and edges, the algorithm minimizes computational overhead while maintaining an updated and visually informative map representation.
+
+- **Deleting Old Edges**:
+  - Instead of directly deleting old edges, the algorithm repaints them white for optimization purposes. This optimization choice avoids the computational burden of explicitly removing old edges and allows the algorithm to focus on updating and rendering new map elements efficiently.
+
+Overall, these optimization strategies prioritize efficiency and performance in the RRT* algorithm, enabling smoother and faster path planning in dynamic environments.
+
+
+
+
+## OpenCV Map Styling
+
+In an OpenCV application, managing the styling of the map is crucial for clarity and visual appeal. Here's how different styling choices are implemented:
+
+- `Red for New Points and Edges`: 
+    -> New points and edges added to the map are highlighted in red. This color choice helps draw attention to newly added elements, making them easily distinguishable from existing ones.
+
+- `Green for Redrawn Edges (RRT*)`: 
+    -> When redrawing edges, particularly in the context of the RRT* algorithm, green is used. This color signifies redrawn edges, indicating modifications or updates made to the map structure. 
+
+- `Blue for Final Path Taken`: 
+    -> The final path taken by the algorithm is represented in blue. This color choice emphasizes the path taken, providing clarity on the trajectory followed from the initial pose to the goal pose.
+
+- `Concentric Circle Displaying the Goal Radius`: 
+    -> To visualize the goal radius, concentric circles are displayed on the map. These circles help depict the area around the goal pose that defines the success region for the algorithm.
+
+By employing distinct colors for different elements of the map, such as new points and edges, redrawn edges, final paths, and goal radius, the map remains informative and visually appealing. Users can easily interpret the map and understand the results of the algorithm's computations.
+
+
+
+
+
+
 
 
