@@ -276,7 +276,7 @@ In the context of the RRT\* algorithm, optimization strategies are crucial for e
     -   Redrawing the entire map for each new node addition may initially seem inefficient. However, this approach offers optimization benefits in terms of map rendering. By redrawing only the necessary elements, such as newly added nodes and edges, the algorithm minimizes computational overhead while maintaining an updated and visually informative map representation.
 
 -   **Deleting Old Edges**:
-    -   Instead of directly deleting old edges, the algorithm repaints them white for optimization purposes. This optimization choice avoids the computational burden of explicitly removing old edges and allows the algorithm to focus on updating and rendering new map elements efficiently.
+    -   Instead of directly deleting old edges, the edges are left on the display for comparison purposes. This optimization choice avoids the computational burden of explicitly removing old edges and allows the algorithm to focus on updating and rendering new map elements efficiently.
 
 Overall, these optimization strategies prioritize efficiency and performance in the RRT\* algorithm, enabling smoother and faster path planning in dynamic environments.
 
